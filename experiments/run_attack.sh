@@ -6,7 +6,7 @@
 
 MODE="${1:-beacon}"        # beacon | deauth | flood
 SECURITY="${2:-wpa2}"      # wpa2   | wpa3
-IFACE_MON="wlan2mon"
+IFACE_MON="wlp1s0mon"       # wlan2mon
 SERVER_IP="192.168.10.10"
 DURATION=60
 OUTDIR="results/raw"

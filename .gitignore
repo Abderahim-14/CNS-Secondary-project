@@ -1,0 +1,3 @@
+venv/
+*.pcapng
+__pycache__/

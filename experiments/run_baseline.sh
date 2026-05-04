@@ -2,7 +2,7 @@
 # experiments/run_baseline.sh
 # Run baseline iperf3 + tshark capture before any attack is launched.
 
-IFACE_MON="wlan2mon"          # capture interface in monitor mode
+IFACE_MON="wlp1s0mon"          # capture interface in monitor mode: wlan2mon
 SERVER_IP="192.168.10.10"     # iperf3 server (Client 1)
 OUTDIR="results/raw"
 mkdir -p "$OUTDIR" captures

@@ -21,9 +21,11 @@ def throughput_timeline(csv_paths: dict, title="Throughput Over Time"):
 
 
 def wpa2_vs_wpa3_bar(results: dict, title="WPA2 vs. WPA3 — Avg Throughput Under Attack"):
-    """results: {'Beacon WPA2': 12.3, 'Beacon WPA3': 34.1, ...}"""
+    """results: {'Beacon WPA2': 'path.csv', 'Beacon WPA3': 'path.csv', ...}"""
+    values_map = {label: pd.read_csv(path)["throughput_mbps"].mean()
+                  for label, path in results.items()}
     fig, ax = plt.subplots(figsize=(10, 5))
-    labels = list(results.keys()); values = list(results.values())
+    labels = list(values_map.keys()); values = list(values_map.values())
     colors = ["#e05252" if "WPA2" in l else "#5280e0" for l in labels]
     bars = ax.bar(labels, values, color=colors, width=0.5)
     ax.bar_label(bars, fmt="%.1f Mbps", padding=4, fontsize=9)
@@ -48,9 +50,11 @@ def frame_rate_timeline(csv_path, frame_col, title, filename):
 
 
 def packet_loss_bar(results: dict, title="Packet Loss % by Attack Mode and Security"):
-    """results: {'Beacon WPA2': 72.1, 'Beacon WPA3': 61.4, ...}"""
+    """results: {'Beacon WPA2': 'path.csv', 'Beacon WPA3': 'path.csv', ...}"""
+    values_map = {label: pd.read_csv(path)["lost_pct"].mean()
+                  for label, path in results.items()}
     fig, ax = plt.subplots(figsize=(10, 5))
-    labels = list(results.keys()); values = list(results.values())
+    labels = list(values_map.keys()); values = list(values_map.values())
     colors = ["#e05252" if "WPA2" in l else "#5280e0" for l in labels]
     bars = ax.bar(labels, values, color=colors, width=0.5)
     ax.bar_label(bars, fmt="%.1f%%", padding=4, fontsize=9)
@@ -62,9 +66,22 @@ def packet_loss_bar(results: dict, title="Packet Loss % by Attack Mode and Secur
 
 
 def wids_latency_boxplot(latencies: dict, title="WIDS Alert Latency by Attack Mode"):
-    """latencies: {'Beacon': [1.2, 0.9, 1.5, ...], 'Deauth': [...], 'Flood': [...]}"""
+    """latencies: {'Beacon': 'results/wids_beacon.csv', 'Deauth': '...', 'Flood': '...'}"""
+    import csv, datetime
+    values_map = {}
+    for mode, path in latencies.items():
+        with open(path) as f:
+            rows = list(csv.DictReader(f))
+        if not rows:
+            values_map[mode] = []
+            continue
+        t0 = datetime.datetime.strptime(rows[0]["timestamp"], "%H:%M:%S")
+        values_map[mode] = [
+            (datetime.datetime.strptime(r["timestamp"], "%H:%M:%S") - t0).seconds
+            for r in rows
+        ]
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.boxplot(latencies.values(), labels=latencies.keys(), patch_artist=True)
+    ax.boxplot(values_map.values(), labels=values_map.keys(), patch_artist=True)
     ax.set_ylabel("Alert Latency (s)"); ax.set_title(title); ax.grid(axis="y", alpha=0.3)
     out = f"{OUTDIR}/wids_latency_boxplot.png"
     plt.savefig(out, dpi=150, bbox_inches="tight"); plt.close()
