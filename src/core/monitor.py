@@ -1,6 +1,9 @@
 import subprocess, sys, re
 
 def enable_monitor(iface):
+    # cleanup any stale monitor interface first
+    subprocess.run(["sudo", "airmon-ng", "stop", "wlan0mon"],
+                   capture_output=True)
     subprocess.run(["sudo", "airmon-ng", "check", "kill"], check=True)
     result = subprocess.run(["sudo", "airmon-ng", "start", iface],
                             capture_output=True, text=True)
