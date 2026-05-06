@@ -31,7 +31,7 @@ sudo PYTHONPATH=src python3 src/detection/wids.py --iface wlan0mon --log results
 ```bash
 cd ~/CNS-Secondary-project
 
-# deauth — kicks devices off AP (WPA2 only)
+# deauth — kicks devices off AP
 sudo python3 src/main.py --skip-monitor --mode deauth --bssid XX:XX:XX:XX:XX:XX --channel 11 --duration 60
 
 # beacon flood — congests channel with fake networks
